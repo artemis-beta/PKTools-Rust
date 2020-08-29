@@ -1,0 +1,36 @@
+name: PKTools-Rust
+
+on: [push]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        container:
+            image: rust:latest
+            env:
+                DEBIAN_FRONTEND: noninteractive
+            options: --security-opt seccomp=unconfined
+        steps:
+            - uses : actions/checkout@v2
+            
+            - name : Build Examples
+              run  : cargo build --examples
+            
+            - name : Install System Requirements
+              run  : apt update && apt upgrade -y && apt install -y build-essential cmake binutils-dev libcurl4-openssl-dev zlib1g-dev libdw-dev libiberty-dev
+
+            - name : Install kcov
+              run  : |
+                     wget https://github.com/SimonKagstrom/kcov/archive/master.tar.gz
+                     tar xzf master.tar.gz
+                     cmake -Hkcov-master -Bkcov-master/build
+                     cmake --build kcov-master/build
+                     cmake --build kcov-master/build --target install
+                     ls -ltr kcov-master/build/src
+            
+            - name  : Run Examples
+              run   : |
+                     for i in $(ls target/debug/examples/PK*[!\.dSYM]); do kcov --exclude-pattern=/.cargo,/usr/lib target/cov $i; done
+
+            - name : Upload Coverage
+              run : bash -c "bash <(curl -s https://codecov.io/bash)"
