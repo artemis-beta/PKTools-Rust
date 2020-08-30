@@ -4,37 +4,37 @@ use num_traits::Pow;
 
 #[derive(Copy, Clone)]
 pub struct var {
-    value_ : f64,
-    error_ : f64,
+    _value : f64,
+    _error : f64,
 }
 
 pub fn PKVar(value : f64, error : f64) -> var {
-    var {value_ : value, error_ : error}
+    var {_value : value, _error : error}
 }
 
 impl Pow<f64> for var {
     type Output = var;
     fn pow(self, _rhs : f64) -> var {
 
-        if self.value_ == 0. && _rhs < 1.
+        if self._value == 0. && _rhs < 1.
         {
-            return var {value_ : 0., error_ : 1E-310};
+            return var {_value : 0., _error : 1E-310};
         }
 
         var {
-            value_ : (self.value_).powf(_rhs),
-            error_ : self.error_*_rhs*(self.value_).powf(_rhs-1.)
+            _value : (self._value).powf(_rhs),
+            _error : self._error*_rhs*(self._value).powf(_rhs-1.)
         }
     }
 }
 
 impl var {
     pub fn getVal(&self) -> f64 {
-        self.value_
+        self._value
     }
 
     pub fn getError(&self) -> f64 {
-        self.error_
+        self._error
     }
 
     pub fn Sqrt(self) -> var {
@@ -47,8 +47,8 @@ impl ops::Add<var> for var {
 
     fn add(self, _rhs : var) -> var {
         var {
-            value_ : self.value_ + _rhs.value_,
-            error_ : (self.error_.powi(2)+_rhs.error_.powi(2)).powf(0.5)
+            _value : self._value + _rhs._value,
+            _error : (self._error.powi(2)+_rhs._error.powi(2)).powf(0.5)
         }
     }
 }
@@ -58,8 +58,8 @@ impl ops::Sub<var> for var {
 
     fn sub(self, _rhs : var) -> var {
         var {
-            value_ : self.value_ - _rhs.value_,
-            error_ : (self.error_.powi(2)+_rhs.error_.powi(2)).powf(0.5)
+            _value : self._value - _rhs._value,
+            _error : (self._error.powi(2)+_rhs._error.powi(2)).powf(0.5)
         }
     }
 }
@@ -69,8 +69,8 @@ impl ops::Mul<var> for var {
 
     fn mul(self, _rhs : var) -> var {
         var {
-            value_ : self.value_ * _rhs.value_,
-            error_ : ((self.error_ * _rhs.value_).powi(2)+(self.value_*_rhs.error_).powi(2)).powf(0.5)
+            _value : self._value * _rhs._value,
+            _error : ((self._error * _rhs._value).powi(2)+(self._value*_rhs._error).powi(2)).powf(0.5)
         }
     }
 }
@@ -81,8 +81,8 @@ impl ops::Mul<i32> for var {
     fn mul(self, _rhs : i32) -> var {
         let rhs = Box::new(_rhs as f64);
         var {
-            value_ : self.value_ * *rhs,
-            error_ : self.error_ * *rhs
+            _value : self._value * *rhs,
+            _error : self._error * *rhs
         }
     }
 }
@@ -92,8 +92,8 @@ impl ops::Mul<f64> for var {
 
     fn mul(self, _rhs : f64) -> var {
         var {
-            value_ : self.value_ * _rhs,
-            error_ : self.error_ * _rhs
+            _value : self._value * _rhs,
+            _error : self._error * _rhs
         }
     }
 }
@@ -103,8 +103,8 @@ impl ops::Div<var> for var {
 
     fn div(self, _rhs : var) -> var {
         var {
-            value_ : self.value_ / _rhs.value_,
-            error_ : ((self.error_/_rhs.value_).powi(2)+(self.value_*_rhs.error_).powi(2)*_rhs.value_.powi(-4)).powf(0.5)
+            _value : self._value / _rhs._value,
+            _error : ((self._error/_rhs._value).powi(2)+(self._value*_rhs._error).powi(2)*_rhs._value.powi(-4)).powf(0.5)
         }
     }
 }
@@ -115,8 +115,8 @@ impl ops::Div<i32> for var {
     fn div(self, _rhs : i32) -> var {
         let rhs = Box::new(_rhs as f64);
         var {
-            value_ : self.value_ / *rhs,
-            error_ : self.error_ / *rhs
+            _value : self._value / *rhs,
+            _error : self._error / *rhs
         }
     }
 }
@@ -126,15 +126,15 @@ impl ops::Div<f64> for var {
 
     fn div(self, _rhs : f64) -> var {
         var {
-            value_ : self.value_ / _rhs,
-            error_ : self.error_ / _rhs
+            _value : self._value / _rhs,
+            _error : self._error / _rhs
         }
     }
 }
 
 impl fmt::Display for var {
     fn fmt(&self, f : &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "PKVar({:.4}, {:.4})", self.value_, self.error_)
+        write!(f, "PKVar({:.4}, {:.4})", self._value, self._error)
     }
 }
 
@@ -144,14 +144,14 @@ impl Pow<i32> for var {
 
         let rhs = _rhs as f64;
 
-        if self.value_ == 0. && _rhs < 1
+        if self._value == 0. && _rhs < 1
         {
-            return var {value_ : 0., error_ : 1E-310};
+            return var {_value : 0., _error : 1E-310};
         }
 
         var {
-            value_ : (self.value_).powi(_rhs),
-            error_ : self.error_*rhs*(self.value_).powi(_rhs-1)
+            _value : (self._value).powi(_rhs),
+            _error : self._error*rhs*(self._value).powi(_rhs-1)
         }
     }
 }
